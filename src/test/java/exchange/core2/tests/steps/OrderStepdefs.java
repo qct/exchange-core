@@ -112,7 +112,6 @@ public class OrderStepdefs implements En {
 
         Before((HookNoArgsBody) -> {
             container = ExchangeTestContainer.create(testPerformanceConfiguration);
-            container.initBasicSymbols();
         });
         After((HookNoArgsBody) -> {
             if (container != null) {

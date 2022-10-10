@@ -1,5 +1,10 @@
 Feature: An exchange should not allow to users to submit orders which break their limits
 
+  Background:
+    Given add symbol(s) to an exchange:
+      | symbolId | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
+      | 9269     | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
+
   @BasicRiskCheck
   Scenario: basic scenario
     Given Users and their balances:
