@@ -4,6 +4,7 @@ import static exchange.core2.tests.util.ExchangeTestContainer.CHECK_SUCCESS;
 import static exchange.core2.tests.util.TestConstants.SYMBOLSPEC_ETH_XBT;
 import static exchange.core2.tests.util.TestConstants.SYMBOLSPEC_EUR_USD;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -16,6 +17,7 @@ import exchange.core2.core.common.MatcherTradeEvent;
 import exchange.core2.core.common.Order;
 import exchange.core2.core.common.OrderAction;
 import exchange.core2.core.common.OrderType;
+import exchange.core2.core.common.SymbolType;
 import exchange.core2.core.common.UserStatus;
 import exchange.core2.core.common.api.ApiAddUser;
 import exchange.core2.core.common.api.ApiAdjustUserBalance;
@@ -25,6 +27,7 @@ import exchange.core2.core.common.api.ApiMoveOrder;
 import exchange.core2.core.common.api.ApiPlaceOrder;
 import exchange.core2.core.common.api.reports.SingleUserReportResult;
 import exchange.core2.core.common.api.reports.SingleUserReportResult.QueryExecutionStatus;
+import exchange.core2.core.common.api.reports.TotalSymbolReportResult;
 import exchange.core2.core.common.cmd.CommandResultCode;
 import exchange.core2.core.common.cmd.OrderCommand;
 import exchange.core2.core.common.cmd.OrderCommandType;
@@ -55,7 +58,7 @@ public class OrderStepdefs implements En {
     final Map<String, CoreSymbolSpecification> symbolSpecificationMap = new HashMap<>();
     final Map<String, Long> users = new HashMap<>();
 
-    private AtomicLong uniqueIdCounterLong = new AtomicLong();
+    private final AtomicLong uniqueIdCounterLong = new AtomicLong();
 
     public OrderStepdefs() {
         symbolSpecificationMap.put("EUR_USD", SYMBOLSPEC_EUR_USD);
@@ -94,6 +97,18 @@ public class OrderStepdefs implements En {
             }
             return l2helper;
         });
+        DataTableType((Map<String, String> entry) -> CoreSymbolSpecification.builder()
+                .symbolId(Integer.parseInt(entry.get("symbolId")))
+                .type(SymbolType.of(Integer.parseInt(entry.get("type"))))
+                .baseCurrency(Integer.parseInt(entry.get("baseCurrency")))
+                .quoteCurrency(Integer.parseInt(entry.get("quoteCurrency")))
+                .baseScaleK(Long.parseLong(entry.get("baseScaleK")))
+                .quoteScaleK(Long.parseLong(entry.get("quoteScaleK")))
+                .takerFee(Long.parseLong(entry.get("takerFee")))
+                .makerFee(Long.parseLong(entry.get("makerFee")))
+                .marginBuy(Long.parseLong(entry.get("marginBuy")))
+                .marginSell(Long.parseLong(entry.get("marginSell")))
+                .build());
 
         Before((HookNoArgsBody) -> {
             container = ExchangeTestContainer.create(testPerformanceConfiguration);
@@ -285,6 +300,18 @@ public class OrderStepdefs implements En {
                 (Long clientId, String status) -> assertSame(
                         container.getUserProfile(clientId).getQueryExecutionStatus(),
                         QueryExecutionStatus.valueOf(status)));
+
+        Then("An exchange symbols are:", (DataTable dataTable) -> {
+            List<CoreSymbolSpecification> symbolSpecs = dataTable.asList(CoreSymbolSpecification.class);
+            TotalSymbolReportResult result = container.totalSymbolReport();
+            assertThat(
+                    symbolSpecs,
+                    containsInAnyOrder(result.getSymbolSpecs().values().toArray(new CoreSymbolSpecification[0])));
+        });
+        Given("^add symbol\\(s\\) to an exchange:$", (DataTable dataTable) -> {
+            List<CoreSymbolSpecification> symbolSpecs = dataTable.asList(CoreSymbolSpecification.class);
+            container.addSymbols(symbolSpecs);
+        });
     }
 
     private void aClientPassAnOrder(long clientId, String side, long orderId, long price, long size, String orderType,
