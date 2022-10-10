@@ -1,5 +1,11 @@
 Feature: An exchange can add symbols, manage symbols
 
+  Background:
+    Given add symbol(s) to an exchange:
+      | symbolId | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
+      | 5991     | 1    | 978          | 840           | 1          | 1           | 0        | 0        | 2200      | 3210       |
+      | 9269     | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
+
   @SymbolReport
   Scenario: and symbol, query symbol, manipulate symbol
     Then An exchange symbols are:
