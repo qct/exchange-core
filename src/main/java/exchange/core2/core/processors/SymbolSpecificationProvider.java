@@ -79,6 +79,10 @@ public final class SymbolSpecificationProvider implements WriteBytesMarshallable
         symbolSpecs.clear();
     }
 
+    public IntObjectHashMap<CoreSymbolSpecification> getSymbolSpecs() {
+        return symbolSpecs;
+    }
+
     @Override
     public void writeMarshallable(BytesOut bytes) {
         // write symbolSpecs

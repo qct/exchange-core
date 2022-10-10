@@ -320,6 +320,10 @@ public final class ExchangeTestContainer implements AutoCloseable {
         return res;
     }
 
+    public TotalSymbolReportResult totalSymbolReport() {
+        return api.processReport(new TotalSymbolReportQuery(), getRandomTransferId()).join();
+    }
+
     public int requestStateHash() throws InterruptedException, ExecutionException {
         return api.processReport(new StateHashReportQuery(), getRandomTransferId()).get().getStateHash();
     }
