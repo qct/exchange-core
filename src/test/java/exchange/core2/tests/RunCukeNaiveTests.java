@@ -22,7 +22,8 @@ import org.junit.platform.suite.api.Suite;
     @SelectClasspathResource("exchange/core2/tests/features/basic.feature"),
     @SelectClasspathResource("exchange/core2/tests/features/risk.feature"),
     @SelectClasspathResource("exchange/core2/tests/features/account.feature"),
-    @SelectClasspathResource("exchange/core2/tests/features/symbol.feature")
+    @SelectClasspathResource("exchange/core2/tests/features/symbol.feature"),
+    @SelectClasspathResource("exchange/core2/tests/features/fee.feature")
 })
 @ConfigurationParameters({
     @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty, html:target/cucumber/cucumber.html, exchange.core2.tests.RunCukeNaiveTests$CukeNaiveLifeCycleHandler"),

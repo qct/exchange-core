@@ -189,6 +189,8 @@ public final class TestConstants {
                 return CURRENECY_XBT;
             case "ETH":
                 return CURRENECY_ETH;
+            case "LTC":
+                return CURRENECY_LTC;
         }
 
         throw new RuntimeException("Unknown currency [" + currency + "]");

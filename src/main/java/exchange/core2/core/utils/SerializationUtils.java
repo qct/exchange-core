@@ -408,4 +408,16 @@ public final class SerializationUtils {
         return res != null ? res : new IntLongHashMap();
     }
 
+    public static IntLongHashMap filterZero(final IntLongHashMap map) {
+        if (map == null) {
+            return new IntLongHashMap();
+        }
+        IntLongHashMap res = new IntLongHashMap();
+        map.forEachKeyValue((k, v) -> {
+            if (v != 0) {
+                res.put(k, v);
+            }
+        });
+        return res;
+    }
 }
