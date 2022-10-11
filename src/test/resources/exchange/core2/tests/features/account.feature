@@ -4,13 +4,13 @@ Feature: An exchange can add users, manage users and their assets
     Given add symbol(s) to an exchange:
       | symbolId | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
       | 9269     | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user  | asset | balance   |
       | Alice | ETH   | 100000000 |
 
   @UserAndBalance
   Scenario: add user and manage their balances
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user    | asset | balance   |
       | Bob     | XBT   | 100000000 |
       | Charlie | ETH   | 100000000 |
@@ -30,14 +30,14 @@ Feature: An exchange can add users, manage users and their assets
     Then Query Alice will return "USER_NOT_FOUND"
 
   Scenario: suspend user with zero balances
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user    | asset | balance |
       | Charlie | XBT   | 0       |
     When Suspend Charlie who has no balances
     Then Query Charlie will return "USER_NOT_FOUND"
 
   Scenario: suspend user with open orders
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user    | asset | balance |
       | Charlie | XBT   | 18000   |
     When A client Charlie places an BID order 203 at 1800@1 (type: GTC, symbol: ETH_XBT, reservePrice: 1800)

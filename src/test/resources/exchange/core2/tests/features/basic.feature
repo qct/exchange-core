@@ -5,7 +5,7 @@ Feature: An exchange accepts bid\ask orders, manage and publish order book and m
       | symbolId | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
       | 5991     | 1    | 978          | 840           | 1          | 1           | 0        | 0        | 2200      | 3210       |
       | 9269     | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user  | asset | balance   |
       | Alice | USD   | 1000000   |
       | Alice | XBT   | 100000000 |
@@ -55,7 +55,7 @@ Feature: An exchange accepts bid\ask orders, manage and publish order book and m
 
   @CancelBidOrder
   Scenario: cancel BID order
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user    | asset | balance  |
       | Charlie | XBT   | 94000000 |
 
