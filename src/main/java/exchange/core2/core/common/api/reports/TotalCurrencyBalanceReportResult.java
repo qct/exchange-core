@@ -17,6 +17,7 @@ package exchange.core2.core.common.api.reports;
 
 
 import exchange.core2.core.utils.SerializationUtils;
+import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,8 +25,6 @@ import lombok.ToString;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import org.eclipse.collections.impl.map.mutable.primitive.IntLongHashMap;
-
-import java.util.stream.Stream;
 
 @AllArgsConstructor
 @EqualsAndHashCode
@@ -104,4 +103,14 @@ public final class TotalCurrencyBalanceReportResult implements ReportResult {
                                 SerializationUtils.mergeSum(a.openInterestShort, b.openInterestShort)));
     }
 
+    public TotalCurrencyBalanceReportResult filterZero() {
+        return new TotalCurrencyBalanceReportResult(
+                SerializationUtils.filterZero(accountBalances),
+                SerializationUtils.filterZero(fees),
+                SerializationUtils.filterZero(adjustments),
+                SerializationUtils.filterZero(suspends),
+                SerializationUtils.filterZero(ordersBalances),
+                SerializationUtils.filterZero(openInterestLong),
+                SerializationUtils.filterZero(openInterestShort));
+    }
 }

@@ -1,6 +1,7 @@
 package exchange.core2.tests.steps;
 
 import static exchange.core2.tests.util.ExchangeTestContainer.CHECK_SUCCESS;
+import static exchange.core2.tests.util.TestConstants.SYMBOLSPECFEE_XBT_LTC;
 import static exchange.core2.tests.util.TestConstants.SYMBOLSPEC_ETH_XBT;
 import static exchange.core2.tests.util.TestConstants.SYMBOLSPEC_EUR_USD;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,11 +28,13 @@ import exchange.core2.core.common.api.ApiMoveOrder;
 import exchange.core2.core.common.api.ApiPlaceOrder;
 import exchange.core2.core.common.api.reports.SingleUserReportResult;
 import exchange.core2.core.common.api.reports.SingleUserReportResult.QueryExecutionStatus;
+import exchange.core2.core.common.api.reports.TotalCurrencyBalanceReportResult;
 import exchange.core2.core.common.api.reports.TotalSymbolReportResult;
 import exchange.core2.core.common.cmd.CommandResultCode;
 import exchange.core2.core.common.cmd.OrderCommand;
 import exchange.core2.core.common.cmd.OrderCommandType;
 import exchange.core2.core.common.config.PerformanceConfiguration;
+import exchange.core2.core.utils.SerializationUtils;
 import exchange.core2.tests.util.ExchangeTestContainer;
 import exchange.core2.tests.util.L2MarketDataHelper;
 import exchange.core2.tests.util.TestConstants;
@@ -44,6 +47,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.collections.impl.map.mutable.primitive.IntLongHashMap;
 
 @Slf4j
 public class OrderStepdefs implements En {
@@ -63,13 +67,14 @@ public class OrderStepdefs implements En {
     public OrderStepdefs() {
         symbolSpecificationMap.put("EUR_USD", SYMBOLSPEC_EUR_USD);
         symbolSpecificationMap.put("ETH_XBT", SYMBOLSPEC_ETH_XBT);
+        symbolSpecificationMap.put("XBT_LTC", SYMBOLSPECFEE_XBT_LTC);
         users.put("Alice", 1440001L);
         users.put("Bob", 1440002L);
         users.put("Charlie", 1440003L);
 
         ParameterType(
             "symbol",
-            "EUR_USD|ETH_XBT",
+            "EUR_USD|ETH_XBT|XBT_LTC",
             symbolSpecificationMap::get
         );
         ParameterType("user",
@@ -109,10 +114,45 @@ public class OrderStepdefs implements En {
                 .marginBuy(Long.parseLong(entry.get("marginBuy")))
                 .marginSell(Long.parseLong(entry.get("marginSell")))
                 .build());
+        DataTableType((DataTable table) -> table.cells().stream()
+                .skip(1)
+                .map(row -> {
+                    int currency = TestConstants.getCurrency(row.get(0)); // "currency"
+                    return new TotalCurrencyBalanceReportResult(
+                            Long.parseLong(row.get(1)) == 0 // "accountBalances"
+                                    ? new IntLongHashMap()
+                                    : IntLongHashMap.newWithKeysValues(currency, Long.parseLong(row.get(1))),
+                            Long.parseLong(row.get(2)) == 0 // "fees"
+                                    ? new IntLongHashMap()
+                                    : IntLongHashMap.newWithKeysValues(currency, Long.parseLong(row.get(2))),
+                            Long.parseLong(row.get(3)) == 0 // "adjustments"
+                                    ? new IntLongHashMap()
+                                    : IntLongHashMap.newWithKeysValues(currency, Long.parseLong(row.get(3))),
+                            Long.parseLong(row.get(4)) == 0 // "suspends"
+                                    ? new IntLongHashMap()
+                                    : IntLongHashMap.newWithKeysValues(currency, Long.parseLong(row.get(4))),
+                            Long.parseLong(row.get(5)) == 0 // "ordersBalances"
+                                    ? new IntLongHashMap()
+                                    : IntLongHashMap.newWithKeysValues(currency, Long.parseLong(row.get(5))),
+                            Long.parseLong(row.get(6)) == 0 // "openInterestLong"
+                                    ? new IntLongHashMap()
+                                    : IntLongHashMap.newWithKeysValues(currency, Long.parseLong(row.get(6))),
+                            Long.parseLong(row.get(7)) == 0 // "openInterestShort"
+                                    ? new IntLongHashMap()
+                                    : IntLongHashMap.newWithKeysValues(currency, Long.parseLong(row.get(7))));
+                })
+                .reduce(
+                        TotalCurrencyBalanceReportResult.createEmpty(),
+                        (a, b) -> new TotalCurrencyBalanceReportResult(
+                                SerializationUtils.mergeSum(a.getAccountBalances(), b.getAccountBalances()),
+                                SerializationUtils.mergeSum(a.getFees(), b.getFees()),
+                                SerializationUtils.mergeSum(a.getAdjustments(), b.getAdjustments()),
+                                SerializationUtils.mergeSum(a.getSuspends(), b.getSuspends()),
+                                SerializationUtils.mergeSum(a.getOrdersBalances(), b.getOrdersBalances()),
+                                SerializationUtils.mergeSum(a.getOpenInterestLong(), b.getOpenInterestLong()),
+                                SerializationUtils.mergeSum(a.getOpenInterestShort(), b.getOpenInterestShort()))));
 
-        Before((HookNoArgsBody) -> {
-            container = ExchangeTestContainer.create(testPerformanceConfiguration);
-        });
+        Before((HookNoArgsBody) -> container = ExchangeTestContainer.create(testPerformanceConfiguration));
         After((HookNoArgsBody) -> {
             if (container != null) {
                 container.close();
@@ -310,6 +350,11 @@ public class OrderStepdefs implements En {
         Given("^add symbol\\(s\\) to an exchange:$", (DataTable dataTable) -> {
             List<CoreSymbolSpecification> symbolSpecs = dataTable.asList(CoreSymbolSpecification.class);
             container.addSymbols(symbolSpecs);
+        });
+        And("^Total currency balance report is:$", (TotalCurrencyBalanceReportResult report) -> {
+            TotalCurrencyBalanceReportResult result = container.totalBalanceReport().filterZero();
+            assertEquals(report.isGlobalBalancesAllZero(), report.isGlobalBalancesAllZero());
+            assertEquals(report, result);
         });
     }
 
