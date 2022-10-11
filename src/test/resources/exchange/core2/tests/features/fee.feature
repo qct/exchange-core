@@ -7,7 +7,7 @@ Feature: An exchange collects fees from both makers and takers while matching or
 
   @CollectFee
   Scenario: place an GTC BID order require fees, then cancel it
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user | asset | balance    |
       | Bob  | LTC   | 3420000000 |
     When A client Bob could not place an BID order 203 at 11400@30 (type: GTC, symbol: XBT_LTC, reservePrice: 11400) due to RISK_NSF
@@ -49,7 +49,7 @@ Feature: An exchange collects fees from both makers and takers while matching or
       | LTC      | 3420057000      | 0    | -3420057000 | 0        | 0              | 0                | 0                 |
 
   Scenario: a BidGtcMaker matched by an AskIocTakerPartial
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user  | asset | balance      |
       | Alice | LTC   | 200000000000 |
       | Bob   | XBT   | 2000000000   |
@@ -86,7 +86,7 @@ Feature: An exchange collects fees from both makers and takers while matching or
       | XBT      | 2000000000      | 0       | -2000000000   | 0        | 0              | 0                | 0                 |
 
   Scenario: a BidGtcMakerPartial matched by an AskIocTaker
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user  | asset | balance      |
       | Alice | LTC   | 200000000000 |
       | Bob   | XBT   | 2000000000   |
@@ -127,7 +127,7 @@ Feature: An exchange collects fees from both makers and takers while matching or
       | XBT      | 2000000000      | 0       | -2000000000   | 0        | 0              | 0                | 0                 |
 
   Scenario: an AskGtcMaker matched by a BidIocTakerPartial
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user  | asset | balance      |
       | Alice | XBT   | 2000000000   |
       | Bob   | LTC   | 260000000000 |
@@ -165,7 +165,7 @@ Feature: An exchange collects fees from both makers and takers while matching or
       | XBT      | 2000000000      | 0       | -2000000000   | 0        | 0              | 0                | 0                 |
 
   Scenario: an AskGtcMakerPartial matched by a BidIocTaker
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user  | asset | balance      |
       | Alice | XBT   | 2000000000   |
       | Bob   | LTC   | 260000000000 |

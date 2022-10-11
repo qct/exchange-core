@@ -159,7 +159,7 @@ public class OrderStepdefs implements En {
             }
         });
 
-        Given("^Users and their balances:$", (DataTable datatable) -> {
+        Given("^Add Users and adjust their balances:$", (DataTable datatable) -> {
             Map<Long, Map<Integer, Long>> userBalances = Maps.newHashMap();
             datatable.cells().stream().skip(1)
                 .forEach(row -> {

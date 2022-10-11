@@ -7,7 +7,7 @@ Feature: An exchange should not allow to users to submit orders which break thei
 
   @BasicRiskCheck
   Scenario: basic scenario
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user  | asset | balance |
       | Alice | XBT   | 2000000 |
       | Bob   | ETH   | 699999  |
@@ -48,7 +48,7 @@ Feature: An exchange should not allow to users to submit orders which break thei
 
   @MoveOrdersUpAndDown
   Scenario: move orders UP and DOWN
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user  | asset | balance   |
       | Alice | ETH   | 100000000 |
 
@@ -78,7 +78,7 @@ Feature: An exchange should not allow to users to submit orders which break thei
       | id  | price | size | filled | reservePrice | side |
       | 202 | 20000 | 1000 | 0      | 30000        | ASK  |
 
-    Given Users and their balances:
+    Given Add Users and adjust their balances:
       | user | asset | balance  |
       | Bob  | XBT   | 94000000 |
 
