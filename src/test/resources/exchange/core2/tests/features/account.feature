@@ -1,7 +1,7 @@
 Feature: An exchange can add users, manage users and their assets
 
   Background:
-    Given add symbol(s) to an exchange:
+    Given Add symbol(s) to an exchange:
       | symbolId | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
       | 9269     | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
     Given Add Users and adjust their balances:

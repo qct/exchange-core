@@ -347,7 +347,7 @@ public class OrderStepdefs implements En {
                     symbolSpecs,
                     containsInAnyOrder(result.getSymbolSpecs().values().toArray(new CoreSymbolSpecification[0])));
         });
-        Given("^add symbol\\(s\\) to an exchange:$", (DataTable dataTable) -> {
+        Given("^Add symbol\\(s\\) to an exchange:$", (DataTable dataTable) -> {
             List<CoreSymbolSpecification> symbolSpecs = dataTable.asList(CoreSymbolSpecification.class);
             container.addSymbols(symbolSpecs);
         });

@@ -1,7 +1,7 @@
 Feature: An exchange accepts bid\ask orders, manage and publish order book and match cross orders
 
   Background:
-    Given add symbol(s) to an exchange:
+    Given Add symbol(s) to an exchange:
       | symbolId | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
       | 5991     | 1    | 978          | 840           | 1          | 1           | 0        | 0        | 2200      | 3210       |
       | 9269     | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |

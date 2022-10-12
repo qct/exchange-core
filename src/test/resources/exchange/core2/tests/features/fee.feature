@@ -1,7 +1,7 @@
 Feature: An exchange collects fees from both makers and takers while matching orders
 
   Background:
-    Given add symbol(s) to an exchange:
+    Given Add symbol(s) to an exchange:
       | symbolId | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
       | 9340     | 0    | 3762         | 4141          | 1000000    | 10000       | 1900     | 700      | 0         | 0          |
 
