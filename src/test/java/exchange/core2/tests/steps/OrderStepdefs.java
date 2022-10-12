@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import exchange.core2.core.common.CoreSymbolSpecification;
 import exchange.core2.core.common.MatcherEventType;
@@ -102,18 +103,40 @@ public class OrderStepdefs implements En {
             }
             return l2helper;
         });
-        DataTableType((Map<String, String> entry) -> CoreSymbolSpecification.builder()
-                .symbolId(Integer.parseInt(entry.get("symbolId")))
-                .type(SymbolType.of(Integer.parseInt(entry.get("type"))))
-                .baseCurrency(Integer.parseInt(entry.get("baseCurrency")))
-                .quoteCurrency(Integer.parseInt(entry.get("quoteCurrency")))
-                .baseScaleK(Long.parseLong(entry.get("baseScaleK")))
-                .quoteScaleK(Long.parseLong(entry.get("quoteScaleK")))
-                .takerFee(Long.parseLong(entry.get("takerFee")))
-                .makerFee(Long.parseLong(entry.get("makerFee")))
-                .marginBuy(Long.parseLong(entry.get("marginBuy")))
-                .marginSell(Long.parseLong(entry.get("marginSell")))
-                .build());
+        DataTableType((Map<String, String> entry) -> {
+            String typeStr = entry.get("type");
+            String baseCurrencyStr = entry.get("baseCurrency");
+            String quoteCurrencyStr = entry.get("quoteCurrency");
+            String baseScaleKStr = entry.get("baseScaleK");
+            String quoteScaleKStr = entry.get("quoteScaleK");
+            String takerFeeStr = entry.get("takerFee");
+            String makerFeeStr = entry.get("makerFee");
+            String marginBuyStr = entry.get("marginBuy");
+            String marginSellStr = entry.get("marginSell");
+            SymbolType type = Strings.isNullOrEmpty(typeStr)
+                    ? SymbolType.CURRENCY_EXCHANGE_PAIR
+                    : SymbolType.of(Integer.parseInt(typeStr));
+            int baseCurrency = Strings.isNullOrEmpty(baseCurrencyStr) ? 0 : Integer.parseInt(baseCurrencyStr);
+            int quoteCurrency = Strings.isNullOrEmpty(quoteCurrencyStr) ? 0 : Integer.parseInt(quoteCurrencyStr);
+            long baseScaleK = Strings.isNullOrEmpty(baseScaleKStr) ? 0 : Long.parseLong(baseScaleKStr);
+            long quoteScaleK = Strings.isNullOrEmpty(quoteScaleKStr) ? 0 : Long.parseLong(quoteScaleKStr);
+            long takerFee = Strings.isNullOrEmpty(takerFeeStr) ? 0 : Long.parseLong(takerFeeStr);
+            long makerFee = Strings.isNullOrEmpty(makerFeeStr) ? 0 : Long.parseLong(makerFeeStr);
+            long marginBuy = Strings.isNullOrEmpty(marginBuyStr) ? 0 : Long.parseLong(marginBuyStr);
+            long marginSell = Strings.isNullOrEmpty(marginSellStr) ? 0 : Long.parseLong(marginSellStr);
+            return CoreSymbolSpecification.builder()
+                    .symbolId(symbolSpecificationMap.get(entry.get("name")).symbolId)
+                    .type(type)
+                    .baseCurrency(baseCurrency)
+                    .quoteCurrency(quoteCurrency)
+                    .baseScaleK(baseScaleK)
+                    .quoteScaleK(quoteScaleK)
+                    .takerFee(takerFee)
+                    .makerFee(makerFee)
+                    .marginBuy(marginBuy)
+                    .marginSell(marginSell)
+                    .build();
+        });
         DataTableType((DataTable table) -> table.cells().stream()
                 .skip(1)
                 .map(row -> {
@@ -355,6 +378,19 @@ public class OrderStepdefs implements En {
             TotalCurrencyBalanceReportResult result = container.totalBalanceReport().filterZero();
             assertEquals(report.isGlobalBalancesAllZero(), report.isGlobalBalancesAllZero());
             assertEquals(report, result);
+        });
+        Given(
+                "Adjust symbol {symbol} taker fee to {long}, maker fee to {long}",
+                (CoreSymbolSpecification symbol, Long takerFee, Long makerFee) ->
+                        container.adjustFee(CoreSymbolSpecification.builder()
+                                .symbolId(symbol.symbolId)
+                                .type(symbol.type)
+                                .takerFee(takerFee)
+                                .makerFee(makerFee)
+                                .build()));
+        Given("^Bulk adjust symbols fees:$", (DataTable datatable) -> {
+            List<CoreSymbolSpecification> symbols = datatable.asList(CoreSymbolSpecification.class);
+            container.adjustFee(symbols);
         });
     }
 

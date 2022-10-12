@@ -2,9 +2,9 @@ Feature: An exchange accepts bid\ask orders, manage and publish order book and m
 
   Background:
     Given Add symbol(s) to an exchange:
-      | symbolId | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
-      | 5991     | 1    | 978          | 840           | 1          | 1           | 0        | 0        | 2200      | 3210       |
-      | 9269     | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
+      | name    | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
+      | EUR_USD | 1    | 978          | 840           | 1          | 1           | 0        | 0        | 2200      | 3210       |
+      | ETH_XBT | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
     Given Add Users and adjust their balances:
       | user  | asset | balance   |
       | Alice | USD   | 1000000   |

@@ -19,6 +19,7 @@ import exchange.core2.collections.objpool.ObjectsPool;
 import exchange.core2.core.common.*;
 import exchange.core2.core.common.api.binary.BatchAddAccountsCommand;
 import exchange.core2.core.common.api.binary.BatchAddSymbolsCommand;
+import exchange.core2.core.common.api.binary.BatchAdjustFeeCommand;
 import exchange.core2.core.common.api.binary.BinaryDataCommand;
 import exchange.core2.core.common.api.reports.ReportQuery;
 import exchange.core2.core.common.api.reports.ReportResult;
@@ -342,6 +343,27 @@ public final class RiskEngine implements WriteBytesMarshallable {
                             adjustBalance(uid, cur, bal, 1_000_000_000 + cur, BalanceAdjustmentType.ADJUSTMENT));
                 } else {
                     log.debug("User already exist: {}", uid);
+                }
+            });
+        } else if (message instanceof BatchAdjustFeeCommand) {
+            final IntObjectHashMap<CoreSymbolSpecification> inputs = ((BatchAdjustFeeCommand) message).getSymbols();
+            inputs.forEach(spec -> {
+                CoreSymbolSpecification target = symbolSpecificationProvider.getSymbolSpecification(spec.symbolId);
+                if (target != null) {
+                    CoreSymbolSpecification newSpec = new CoreSymbolSpecification(
+                            target.symbolId,
+                            target.type,
+                            target.baseCurrency,
+                            target.quoteCurrency,
+                            target.baseScaleK,
+                            target.quoteScaleK,
+                            spec.takerFee,
+                            spec.makerFee,
+                            target.marginBuy,
+                            target.marginSell);
+                    symbolSpecificationProvider.registerSymbol(newSpec.symbolId, newSpec);
+                } else {
+                    log.warn("Symbol {} doesn't exist", spec.symbolId);
                 }
             });
         }

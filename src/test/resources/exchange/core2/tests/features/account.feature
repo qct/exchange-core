@@ -2,8 +2,8 @@ Feature: An exchange can add users, manage users and their assets
 
   Background:
     Given Add symbol(s) to an exchange:
-      | symbolId | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
-      | 9269     | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
+      | name    | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
+      | ETH_XBT | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
     Given Add Users and adjust their balances:
       | user  | asset | balance   |
       | Alice | ETH   | 100000000 |

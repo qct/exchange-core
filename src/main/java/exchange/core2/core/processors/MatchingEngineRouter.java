@@ -20,6 +20,7 @@ import exchange.core2.core.common.CoreSymbolSpecification;
 import exchange.core2.core.common.SymbolType;
 import exchange.core2.core.common.api.binary.BatchAddAccountsCommand;
 import exchange.core2.core.common.api.binary.BatchAddSymbolsCommand;
+import exchange.core2.core.common.api.binary.BatchAdjustFeeCommand;
 import exchange.core2.core.common.api.reports.ReportQuery;
 import exchange.core2.core.common.api.reports.ReportResult;
 import exchange.core2.core.common.cmd.CommandResultCode;
@@ -221,6 +222,8 @@ public final class MatchingEngineRouter implements WriteBytesMarshallable {
             final IntObjectHashMap<CoreSymbolSpecification> symbols = ((BatchAddSymbolsCommand) message).getSymbols();
             symbols.forEach(this::addSymbol);
         } else if (message instanceof BatchAddAccountsCommand) {
+            // do nothing
+        } else if (message instanceof BatchAdjustFeeCommand) {
             // do nothing
         }
     }

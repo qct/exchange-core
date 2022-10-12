@@ -23,6 +23,7 @@ import exchange.core2.core.common.L2MarketData;
 import exchange.core2.core.common.SymbolType;
 import exchange.core2.core.common.api.*;
 import exchange.core2.core.common.api.binary.BatchAddSymbolsCommand;
+import exchange.core2.core.common.api.binary.BatchAdjustFeeCommand;
 import exchange.core2.core.common.api.binary.BinaryDataCommand;
 import exchange.core2.core.common.api.reports.*;
 import exchange.core2.core.common.cmd.CommandResultCode;
@@ -213,6 +214,14 @@ public final class ExchangeTestContainer implements AutoCloseable {
     public void addSymbols(final List<CoreSymbolSpecification> symbols) {
         // split by chunks
         Lists.partition(symbols, 10000).forEach(partition -> sendBinaryDataCommandSync(new BatchAddSymbolsCommand(partition), 5000));
+    }
+
+    public void adjustFee(final CoreSymbolSpecification symbol) {
+        sendBinaryDataCommandSync(new BatchAdjustFeeCommand(symbol), 5000);
+    }
+
+    public void adjustFee(List<CoreSymbolSpecification> symbols) {
+        sendBinaryDataCommandSync(new BatchAdjustFeeCommand(symbols), 5000);
     }
 
     public void sendBinaryDataCommandSync(final BinaryDataCommand data, final int timeOutMs) {
