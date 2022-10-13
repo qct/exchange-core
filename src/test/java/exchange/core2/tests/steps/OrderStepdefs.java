@@ -22,6 +22,7 @@ import exchange.core2.core.common.OrderType;
 import exchange.core2.core.common.SymbolType;
 import exchange.core2.core.common.UserStatus;
 import exchange.core2.core.common.api.ApiAddUser;
+import exchange.core2.core.common.api.ApiAdjustSymbolFee;
 import exchange.core2.core.common.api.ApiAdjustUserBalance;
 import exchange.core2.core.common.api.ApiCancelOrder;
 import exchange.core2.core.common.api.ApiCommand;
@@ -392,6 +393,26 @@ public class OrderStepdefs implements En {
             List<CoreSymbolSpecification> symbols = datatable.asList(CoreSymbolSpecification.class);
             container.adjustFee(symbols);
         });
+        Given(
+                "Adjust a single symbol {symbol} taker fee to {long}, maker fee to {long}",
+                (CoreSymbolSpecification symbol, Long takerFee, Long makerFee) -> container
+                        .getApi()
+                        .submitCommandAsync(ApiAdjustSymbolFee.builder()
+                                .symbolId(symbol.symbolId)
+                                .takerFee(takerFee)
+                                .makerFee(makerFee)
+                                .build())
+                        .thenAccept(resultCode -> assertEquals(resultCode, CommandResultCode.SUCCESS)));
+        When(
+                "Could not adjust a single symbol {symbol} taker fee to {long}, maker fee to {long} due to {word}",
+                (CoreSymbolSpecification symbol, Long takerFee, Long makerFee, String resultCode) -> container
+                        .getApi()
+                        .submitCommandAsync(ApiAdjustSymbolFee.builder()
+                                .symbolId(symbol.symbolId)
+                                .takerFee(takerFee)
+                                .makerFee(makerFee)
+                                .build())
+                        .thenAccept(code -> assertEquals(code, CommandResultCode.valueOf(resultCode))));
     }
 
     private void aClientPassAnOrder(long clientId, String side, long orderId, long price, long size, String orderType,

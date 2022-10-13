@@ -269,6 +269,11 @@ public final class RiskEngine implements WriteBytesMarshallable {
                     cmd.resultCode = userProfileService.resumeUserProfile(cmd.uid);
                 }
                 return false;
+            case ADJUST_SYMBOL_FEE:
+                if (shardId == 0) {
+                    cmd.resultCode = adjustSymbolFee(cmd.symbol, cmd.price, cmd.size);
+                }
+                return false;
 
             case BINARY_DATA_COMMAND:
             case BINARY_DATA_QUERY:
@@ -305,7 +310,6 @@ public final class RiskEngine implements WriteBytesMarshallable {
         return false;
     }
 
-
     private CommandResultCode adjustBalance(long uid, int currency, long amountDiff, long fundingTransactionId, BalanceAdjustmentType adjustmentType) {
         final CommandResultCode res = userProfileService.balanceAdjustment(uid, currency, amountDiff, fundingTransactionId);
         if (res == CommandResultCode.SUCCESS) {
@@ -320,6 +324,27 @@ public final class RiskEngine implements WriteBytesMarshallable {
             }
         }
         return res;
+    }
+
+    private CommandResultCode adjustSymbolFee(int symbolId, long takerFee, long makerFee) {
+        CoreSymbolSpecification target = symbolSpecificationProvider.getSymbolSpecification(symbolId);
+        if (target == null) {
+            log.warn("Symbol {} doesn't exist", symbolId);
+            return CommandResultCode.SYMBOL_MGMT_SYMBOL_NOT_EXISTS;
+        }
+        CoreSymbolSpecification newSpec = new CoreSymbolSpecification(
+                target.symbolId,
+                target.type,
+                target.baseCurrency,
+                target.quoteCurrency,
+                target.baseScaleK,
+                target.quoteScaleK,
+                takerFee,
+                makerFee,
+                target.marginBuy,
+                target.marginSell);
+        symbolSpecificationProvider.registerSymbol(newSpec.symbolId, newSpec);
+        return CommandResultCode.SUCCESS;
     }
 
     private void handleBinaryMessage(BinaryDataCommand message) {
