@@ -28,13 +28,6 @@ Feature: An exchange can add symbols, manage symbols
       | name    | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
       | EUR_USD | 1    | 978          | 840           | 1          | 1           | 500      | 200      | 2200      | 3210       |
       | ETH_XBT | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
-
-    When Could not adjust symbol XBT_LTC taker fee to 2000, maker fee to 800 due to SYMBOL_MGMT_SYMBOL_NOT_EXISTS
-    Then An exchange symbols are:
-      | name    | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
-      | EUR_USD | 1    | 978          | 840           | 1          | 1           | 500      | 200      | 2200      | 3210       |
-      | ETH_XBT | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
-
     Given Add symbol(s) to an exchange:
       | name    | type | baseCurrency | quoteCurrency | baseScaleK | quoteScaleK | takerFee | makerFee | marginBuy | marginSell |
       | XBT_LTC | 0    | 3762         | 4141          | 1000000    | 10000       | 1900     | 700      | 0         | 0          |

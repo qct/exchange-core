@@ -15,7 +15,6 @@
  */
 package exchange.core2.core.processors;
 
-import exchange.core2.core.CoreException;
 import exchange.core2.core.ExchangeApi;
 import exchange.core2.core.common.MatcherTradeEvent;
 import exchange.core2.core.common.StateHash;
@@ -135,14 +134,8 @@ public final class BinaryCommandsProcessor implements WriteBytesMarshallable, St
 //                log.debug("Unpack {} words", record.wordsTransfered);
                 final BinaryDataCommand binaryDataCommand = deserializeBinaryCommand(bytesIn);
 //                log.debug("Succeed");
-                try {
-                    completeMessagesHandler.accept(binaryDataCommand);
-                    if (cmd.resultCode != CommandResultCode.VALID_FOR_MATCHING_ENGINE) {
-                        return cmd.resultCode;
-                    }
-                } catch (CoreException e) {
-                    cmd.resultCode = e.getResultCode();
-                }
+                completeMessagesHandler.accept(binaryDataCommand);
+
             } else {
                 throw new IllegalStateException();
             }

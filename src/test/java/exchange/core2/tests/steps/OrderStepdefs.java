@@ -27,7 +27,6 @@ import exchange.core2.core.common.api.ApiCancelOrder;
 import exchange.core2.core.common.api.ApiCommand;
 import exchange.core2.core.common.api.ApiMoveOrder;
 import exchange.core2.core.common.api.ApiPlaceOrder;
-import exchange.core2.core.common.api.binary.BatchAdjustFeeCommand;
 import exchange.core2.core.common.api.reports.SingleUserReportResult;
 import exchange.core2.core.common.api.reports.SingleUserReportResult.QueryExecutionStatus;
 import exchange.core2.core.common.api.reports.TotalCurrencyBalanceReportResult;
@@ -393,19 +392,6 @@ public class OrderStepdefs implements En {
             List<CoreSymbolSpecification> symbols = datatable.asList(CoreSymbolSpecification.class);
             container.adjustFee(symbols);
         });
-        When(
-                "Could not adjust symbol {symbol} taker fee to {long}, maker fee to {long} due to {word}",
-                (CoreSymbolSpecification symbol, Long takerFee, Long makerFee, String resultCode) -> {
-                    container
-                            .getApi()
-                            .submitBinaryDataAsync(new BatchAdjustFeeCommand(CoreSymbolSpecification.builder()
-                                    .symbolId(symbol.symbolId)
-                                    .type(symbol.type)
-                                    .takerFee(takerFee)
-                                    .makerFee(makerFee)
-                                    .build()))
-                            .thenAccept(result -> assertThat(result, is(CommandResultCode.valueOf(resultCode))));
-                });
     }
 
     private void aClientPassAnOrder(long clientId, String side, long orderId, long price, long size, String orderType,
