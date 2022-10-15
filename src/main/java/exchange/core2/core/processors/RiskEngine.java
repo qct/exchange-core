@@ -16,6 +16,7 @@
 package exchange.core2.core.processors;
 
 import exchange.core2.collections.objpool.ObjectsPool;
+import exchange.core2.core.CoreException;
 import exchange.core2.core.common.*;
 import exchange.core2.core.common.api.binary.BatchAddAccountsCommand;
 import exchange.core2.core.common.api.binary.BatchAddSymbolsCommand;
@@ -273,7 +274,7 @@ public final class RiskEngine implements WriteBytesMarshallable {
             case BINARY_DATA_COMMAND:
             case BINARY_DATA_QUERY:
                 binaryCommandsProcessor.acceptBinaryFrame(cmd); // ignore return result, because it should be set by MatchingEngineRouter
-                if (shardId == 0) {
+                if (shardId == 0 && cmd.resultCode == CommandResultCode.NEW) {
                     cmd.resultCode = CommandResultCode.VALID_FOR_MATCHING_ENGINE;
                 }
                 return false;
@@ -364,6 +365,7 @@ public final class RiskEngine implements WriteBytesMarshallable {
                     symbolSpecificationProvider.registerSymbol(newSpec.symbolId, newSpec);
                 } else {
                     log.warn("Symbol {} doesn't exist", spec.symbolId);
+                    throw new CoreException(CommandResultCode.SYMBOL_MGMT_SYMBOL_NOT_EXISTS);
                 }
             });
         }
