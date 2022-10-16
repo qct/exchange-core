@@ -24,6 +24,7 @@ import exchange.core2.core.common.SymbolType;
 import exchange.core2.core.common.api.*;
 import exchange.core2.core.common.api.binary.BatchAddSymbolsCommand;
 import exchange.core2.core.common.api.binary.BatchAdjustFeeCommand;
+import exchange.core2.core.common.api.binary.BatchRemoveSymbolCommand;
 import exchange.core2.core.common.api.binary.BinaryDataCommand;
 import exchange.core2.core.common.api.reports.*;
 import exchange.core2.core.common.cmd.CommandResultCode;
@@ -35,6 +36,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.agrona.collections.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.IntLongHashMap;
 import org.hamcrest.core.Is;
 
@@ -222,6 +224,10 @@ public final class ExchangeTestContainer implements AutoCloseable {
 
     public void adjustFee(List<CoreSymbolSpecification> symbols) {
         sendBinaryDataCommandSync(new BatchAdjustFeeCommand(symbols), 5000);
+    }
+
+    public void removeSymbols(Collection<Integer> symbolIds) {
+        sendBinaryDataCommandSync(new BatchRemoveSymbolCommand(symbolIds), 5000);
     }
 
     public void sendBinaryDataCommandSync(final BinaryDataCommand data, final int timeOutMs) {

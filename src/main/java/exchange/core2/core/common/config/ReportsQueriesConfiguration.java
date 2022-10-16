@@ -4,6 +4,7 @@ package exchange.core2.core.common.config;
 import exchange.core2.core.common.api.binary.BatchAddAccountsCommand;
 import exchange.core2.core.common.api.binary.BatchAddSymbolsCommand;
 import exchange.core2.core.common.api.binary.BatchAdjustFeeCommand;
+import exchange.core2.core.common.api.binary.BatchRemoveSymbolCommand;
 import exchange.core2.core.common.api.binary.BinaryCommandType;
 import exchange.core2.core.common.api.binary.BinaryDataCommand;
 import exchange.core2.core.common.api.reports.*;
@@ -51,6 +52,7 @@ public final class ReportsQueriesConfiguration {
         addBinaryCommandClass(binaryCommandConstructors, BinaryCommandType.ADD_ACCOUNTS, BatchAddAccountsCommand.class);
         addBinaryCommandClass(binaryCommandConstructors, BinaryCommandType.ADD_SYMBOLS, BatchAddSymbolsCommand.class);
         addBinaryCommandClass(binaryCommandConstructors, BinaryCommandType.ADJUST_FEE, BatchAdjustFeeCommand.class);
+        addBinaryCommandClass(binaryCommandConstructors, BinaryCommandType.REMOVE_SYMBOLS, BatchRemoveSymbolCommand.class);
 
         // predefined queries (extendable)
         addQueryClass(reportConstructors, ReportType.STATE_HASH.getCode(), StateHashReportQuery.class);

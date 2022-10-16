@@ -34,6 +34,11 @@ Feature: An exchange can add symbols, manage symbols
       | ETH_XBT | 0    | 3928         | 3762          | 100000     | 10          | 0        | 0        | 0         | 0          |
       | XBT_LTC | 0    | 3762         | 4141          | 1000000    | 10000       | 1900     | 700      | 0         | 0          |
 
+    When Bulk remove symbols:
+      | ETH_XBT |
+      | XBT_LTC |
+    Then An exchange does not have symbols
+
   Scenario: adjust a single symbol's fee
     Given Adjust a single symbol EUR_USD taker fee to 500, maker fee to 200
     Then An exchange symbols are:

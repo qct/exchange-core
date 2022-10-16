@@ -21,10 +21,12 @@ import exchange.core2.core.common.StateHash;
 import exchange.core2.core.common.cmd.CommandResultCode;
 import exchange.core2.core.utils.HashingUtils;
 import exchange.core2.core.utils.SerializationUtils;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.bytes.WriteBytesMarshallable;
+import org.agrona.collections.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 
 import java.util.Objects;
@@ -102,5 +104,16 @@ public final class SymbolSpecificationProvider implements WriteBytesMarshallable
         }
         CoreSymbolSpecification removed = symbolSpecs.remove(symbolId);
         return removed == null ? CommandResultCode.SYMBOL_MGMT_SYMBOL_NOT_EXISTS : CommandResultCode.SUCCESS;
+    }
+
+    public int removeSymbols(final IntArrayList symbolIds) {
+        AtomicInteger count = new AtomicInteger();
+        symbolIds.forEachInt(id -> {
+            if (symbolSpecs.remove(id) == null) {
+                log.warn("Removing symbol {} but not exists", id);
+            }
+            count.getAndIncrement();
+        });
+        return count.get();
     }
 }

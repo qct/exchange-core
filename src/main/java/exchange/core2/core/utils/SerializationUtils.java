@@ -170,6 +170,12 @@ public final class SerializationUtils {
         return BitSet.valueOf(readLongArray(bytes));
     }
 
+    public static void marshallIntArray(final int[] ints, final BytesOut bytes) {
+        bytes.writeInt(ints.length);
+        for (int word : ints) {
+            bytes.writeInt(word);
+        }
+    }
 
     public static void marshallLongArray(final long[] longs, final BytesOut bytes) {
         bytes.writeInt(longs.length);
@@ -178,6 +184,15 @@ public final class SerializationUtils {
         }
     }
 
+    public static int[] readIntArray(final BytesIn bytes) {
+        final int length = bytes.readInt();
+        final int[] array = new int[length];
+        // TODO read byte[], then convert into long[]
+        for (int i = 0; i < length; i++) {
+            array[i] = bytes.readInt();
+        }
+        return array;
+    }
 
     public static long[] readLongArray(final BytesIn bytes) {
         final int length = bytes.readInt();
