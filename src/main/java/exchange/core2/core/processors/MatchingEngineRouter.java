@@ -21,7 +21,6 @@ import exchange.core2.core.common.SymbolType;
 import exchange.core2.core.common.api.binary.BatchAddAccountsCommand;
 import exchange.core2.core.common.api.binary.BatchAddSymbolsCommand;
 import exchange.core2.core.common.api.binary.BatchAdjustFeeCommand;
-import exchange.core2.core.common.api.binary.BatchRemoveSymbolCommand;
 import exchange.core2.core.common.api.reports.ReportQuery;
 import exchange.core2.core.common.api.reports.ReportResult;
 import exchange.core2.core.common.cmd.CommandResultCode;
@@ -34,7 +33,6 @@ import exchange.core2.core.processors.journaling.DiskSerializationProcessorConfi
 import exchange.core2.core.processors.journaling.ISerializationProcessor;
 import exchange.core2.core.utils.SerializationUtils;
 import exchange.core2.core.utils.UnsafeUtils;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -233,16 +231,6 @@ public final class MatchingEngineRouter implements WriteBytesMarshallable {
             // do nothing
         } else if (message instanceof BatchAdjustFeeCommand) {
             // do nothing
-        } else if (message instanceof BatchRemoveSymbolCommand) {
-            AtomicInteger count = new AtomicInteger();
-            ((BatchRemoveSymbolCommand) message).getSymbolIds().forEachInt(symbolId -> {
-                if(removeSymbol(symbolId) == CommandResultCode.SUCCESS) {
-                    count.getAndIncrement();
-                }
-            });
-            log.info("Removed {} symbols from Router", count);
-        } else {
-            log.warn("Unknown BinaryDataCommand in Router {}", message);
         }
     }
 
@@ -274,15 +262,13 @@ public final class MatchingEngineRouter implements WriteBytesMarshallable {
     private CommandResultCode removeSymbol(int symbolId) {
         IOrderBook orderBook = orderBooks.get(symbolId);
         if (orderBook == null) {
-            log.warn("Removing symbol {} but not exists", symbolId);
             return CommandResultCode.SYMBOL_MGMT_SYMBOL_NOT_EXISTS;
         }
         if (orderBook.getTotalAskBuckets(1) != 0 || orderBook.getTotalBidBuckets(1) != 0) {
-            log.warn("Removing symbol {} but has open orders", symbolId);
             return CommandResultCode.SYMBOL_MGMT_SYMBOL_HAS_OPEN_ORDER;
         }
-        IOrderBook removed = orderBooks.remove(symbolId);
-        return removed != null ? CommandResultCode.SUCCESS : CommandResultCode.DROP;
+        orderBooks.remove(symbolId);
+        return CommandResultCode.SUCCESS;
     }
 
     private void processMatchingCommand(final OrderCommand cmd) {

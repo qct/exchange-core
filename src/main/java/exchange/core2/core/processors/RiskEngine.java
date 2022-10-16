@@ -20,7 +20,6 @@ import exchange.core2.core.common.*;
 import exchange.core2.core.common.api.binary.BatchAddAccountsCommand;
 import exchange.core2.core.common.api.binary.BatchAddSymbolsCommand;
 import exchange.core2.core.common.api.binary.BatchAdjustFeeCommand;
-import exchange.core2.core.common.api.binary.BatchRemoveSymbolCommand;
 import exchange.core2.core.common.api.binary.BinaryDataCommand;
 import exchange.core2.core.common.api.reports.ReportQuery;
 import exchange.core2.core.common.api.reports.ReportResult;
@@ -44,7 +43,6 @@ import net.openhft.chronicle.bytes.BytesIn;
 import net.openhft.chronicle.bytes.BytesMarshallable;
 import net.openhft.chronicle.bytes.BytesOut;
 import net.openhft.chronicle.bytes.WriteBytesMarshallable;
-import org.agrona.collections.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.IntLongHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 
@@ -401,12 +399,6 @@ public final class RiskEngine implements WriteBytesMarshallable {
                     log.warn("Symbol {} doesn't exist", spec.symbolId);
                 }
             });
-        } else if (message instanceof BatchRemoveSymbolCommand) {
-            IntArrayList symbolIds = ((BatchRemoveSymbolCommand) message).getSymbolIds();
-            int removed = symbolSpecificationProvider.removeSymbols(symbolIds);
-            log.info("Removed {} symbols from Provider", removed);
-        } else {
-            log.warn("Unknown BinaryDataCommand in RiskEngine {}", message);
         }
     }
 

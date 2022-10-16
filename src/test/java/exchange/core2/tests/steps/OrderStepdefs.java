@@ -44,16 +44,12 @@ import exchange.core2.tests.util.TestConstants;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java8.En;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.agrona.collections.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.IntLongHashMap;
 
 @Slf4j
@@ -424,16 +420,6 @@ public class OrderStepdefs implements En {
         When("Could not remove a symbol {word} from an exchange due to {word}:", (String symbol, String resultCode) -> {
             int symbolId = symbolSpecificationMap.get(symbol).symbolId;
             container.submitCommandSync(new ApiRemoveSymbol(symbolId), CommandResultCode.valueOf(resultCode));
-        });
-        When("Bulk remove symbols:", (DataTable table) -> {
-            Set<Integer> ids = table.asList().stream()
-                    .map(s -> symbolSpecificationMap.get(s).symbolId)
-                    .collect(Collectors.toSet());
-            container.removeSymbols(ids);
-        });
-        Then("^An exchange does not have symbols$", () -> {
-            TotalSymbolReportResult result = container.totalSymbolReport();
-            assertEquals(0, result.getSymbolSpecs().size());
         });
     }
 

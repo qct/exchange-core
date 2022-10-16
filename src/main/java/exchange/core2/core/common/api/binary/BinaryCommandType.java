@@ -19,10 +19,10 @@ import lombok.Getter;
 
 @Getter
 public enum BinaryCommandType {
+
     ADD_ACCOUNTS(1002),
     ADD_SYMBOLS(1003),
-    ADJUST_FEE(1004),
-    REMOVE_SYMBOLS(1005);
+    ADJUST_FEE(1004);
 
     private final int code;
 
@@ -39,10 +39,10 @@ public enum BinaryCommandType {
                 return ADD_SYMBOLS;
             case 1004:
                 return ADJUST_FEE;
-            case 1005:
-                return REMOVE_SYMBOLS;
             default:
                 throw new IllegalArgumentException("unknown BinaryCommandType:" + code);
         }
+
     }
+
 }
