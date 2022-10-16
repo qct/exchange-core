@@ -28,6 +28,7 @@ import exchange.core2.core.common.api.ApiCancelOrder;
 import exchange.core2.core.common.api.ApiCommand;
 import exchange.core2.core.common.api.ApiMoveOrder;
 import exchange.core2.core.common.api.ApiPlaceOrder;
+import exchange.core2.core.common.api.ApiRemoveSymbol;
 import exchange.core2.core.common.api.reports.SingleUserReportResult;
 import exchange.core2.core.common.api.reports.SingleUserReportResult.QueryExecutionStatus;
 import exchange.core2.core.common.api.reports.TotalCurrencyBalanceReportResult;
@@ -395,14 +396,13 @@ public class OrderStepdefs implements En {
         });
         Given(
                 "Adjust a single symbol {symbol} taker fee to {long}, maker fee to {long}",
-                (CoreSymbolSpecification symbol, Long takerFee, Long makerFee) -> container
-                        .getApi()
-                        .submitCommandAsync(ApiAdjustSymbolFee.builder()
+                (CoreSymbolSpecification symbol, Long takerFee, Long makerFee) -> container.submitCommandSync(
+                        ApiAdjustSymbolFee.builder()
                                 .symbolId(symbol.symbolId)
                                 .takerFee(takerFee)
                                 .makerFee(makerFee)
-                                .build())
-                        .thenAccept(resultCode -> assertEquals(resultCode, CommandResultCode.SUCCESS)));
+                                .build(),
+                        CHECK_SUCCESS));
         When(
                 "Could not adjust a single symbol {symbol} taker fee to {long}, maker fee to {long} due to {word}",
                 (CoreSymbolSpecification symbol, Long takerFee, Long makerFee, String resultCode) -> container
@@ -413,6 +413,14 @@ public class OrderStepdefs implements En {
                                 .makerFee(makerFee)
                                 .build())
                         .thenAccept(code -> assertEquals(code, CommandResultCode.valueOf(resultCode))));
+        When("Remove a symbol {word} from an exchange:", (String symbol) -> {
+            int symbolId = symbolSpecificationMap.get(symbol).symbolId;
+            container.submitCommandSync(new ApiRemoveSymbol(symbolId), CHECK_SUCCESS);
+        });
+        When("Could not remove a symbol {word} from an exchange due to {word}:", (String symbol, String resultCode) -> {
+            int symbolId = symbolSpecificationMap.get(symbol).symbolId;
+            container.submitCommandSync(new ApiRemoveSymbol(symbolId), CommandResultCode.valueOf(resultCode));
+        });
     }
 
     private void aClientPassAnOrder(long clientId, String side, long orderId, long price, long size, String orderType,

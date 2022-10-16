@@ -18,6 +18,7 @@ package exchange.core2.core.processors;
 
 import exchange.core2.core.common.CoreSymbolSpecification;
 import exchange.core2.core.common.StateHash;
+import exchange.core2.core.common.cmd.CommandResultCode;
 import exchange.core2.core.utils.HashingUtils;
 import exchange.core2.core.utils.SerializationUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -94,4 +95,12 @@ public final class SymbolSpecificationProvider implements WriteBytesMarshallable
         return Objects.hash(HashingUtils.stateHash(symbolSpecs));
     }
 
+    public CommandResultCode removeSymbol(final int symbolId) {
+        final CoreSymbolSpecification symbol = symbolSpecs.get(symbolId);
+        if (symbol == null) {
+            return CommandResultCode.SYMBOL_MGMT_SYMBOL_NOT_EXISTS;
+        }
+        CoreSymbolSpecification removed = symbolSpecs.remove(symbolId);
+        return removed == null ? CommandResultCode.SYMBOL_MGMT_SYMBOL_NOT_EXISTS : CommandResultCode.SUCCESS;
+    }
 }

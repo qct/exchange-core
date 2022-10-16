@@ -5,19 +5,17 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 
 /**
- * <p>Created by qct on 2022/10/15.
+ * <p>Created by qct on 2022/10/16.
  */
 @Builder
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
-public final class ApiAdjustSymbolFee extends ApiCommand {
+public final class ApiRemoveSymbol extends ApiCommand {
 
     public final int symbolId;
-    public final long takerFee;
-    public final long makerFee;
 
     @Override
     public String toString() {
-        return "[ADJUST_SYMBOL_FEE " + symbolId + " takerFee: " + takerFee + " makerFee: " + makerFee + "]";
+        return "[REMOVE_SYMBOL " + symbolId + "]";
     }
 }

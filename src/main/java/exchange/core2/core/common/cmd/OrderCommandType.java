@@ -36,6 +36,7 @@ public enum OrderCommandType {
     RESUME_USER((byte) 13, true),
 
     ADJUST_SYMBOL_FEE((byte) 20, true),
+    REMOVE_SYMBOL((byte) 21, true),
 
     BINARY_DATA_QUERY((byte) 90, false),
     BINARY_DATA_COMMAND((byte) 91, true),

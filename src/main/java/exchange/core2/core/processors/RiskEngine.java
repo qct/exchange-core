@@ -274,6 +274,14 @@ public final class RiskEngine implements WriteBytesMarshallable {
                     cmd.resultCode = adjustSymbolFee(cmd.symbol, cmd.price, cmd.size);
                 }
                 return false;
+            case REMOVE_SYMBOL:
+                if (shardId == 0) {
+                    CoreSymbolSpecification spec = symbolSpecificationProvider.getSymbolSpecification(cmd.symbol);
+                    cmd.resultCode = spec == null
+                            ? CommandResultCode.SYMBOL_MGMT_SYMBOL_NOT_EXISTS
+                            : CommandResultCode.VALID_FOR_MATCHING_ENGINE;
+                }
+                return false;
 
             case BINARY_DATA_COMMAND:
             case BINARY_DATA_QUERY:
@@ -611,6 +619,9 @@ public final class RiskEngine implements WriteBytesMarshallable {
 
         // skip events processing if no events (or if contains BINARY EVENT)
         if (marketData == null && (mte == null || mte.eventType == MatcherEventType.BINARY_EVENT)) {
+            if (cmd.command == OrderCommandType.REMOVE_SYMBOL && cmd.resultCode == CommandResultCode.SUCCESS) {
+                cmd.resultCode = symbolSpecificationProvider.removeSymbol(cmd.symbol);
+            }
             return false;
         }
 

@@ -182,6 +182,12 @@ public final class MatchingEngineRouter implements WriteBytesMarshallable {
             if (symbolForThisHandler(cmd.symbol)) {
                 processMatchingCommand(cmd);
             }
+        }else if(command == OrderCommandType.REMOVE_SYMBOL) {
+            if (shardId == 0) {
+                if (cmd.resultCode == CommandResultCode.VALID_FOR_MATCHING_ENGINE) {
+                    cmd.resultCode = removeSymbol(cmd.symbol);
+                }
+            }
         } else if (command == OrderCommandType.BINARY_DATA_QUERY || command == OrderCommandType.BINARY_DATA_COMMAND) {
 
             final CommandResultCode resultCode = binaryCommandsProcessor.acceptBinaryFrame(cmd);
@@ -251,6 +257,18 @@ public final class MatchingEngineRouter implements WriteBytesMarshallable {
         } else {
             log.warn("OrderBook for symbol id={} already exists! Can not add symbol: {}", spec.symbolId, spec);
         }
+    }
+
+    private CommandResultCode removeSymbol(int symbolId) {
+        IOrderBook orderBook = orderBooks.get(symbolId);
+        if (orderBook == null) {
+            return CommandResultCode.SYMBOL_MGMT_SYMBOL_NOT_EXISTS;
+        }
+        if (orderBook.getTotalAskBuckets(1) != 0 || orderBook.getTotalBidBuckets(1) != 0) {
+            return CommandResultCode.SYMBOL_MGMT_SYMBOL_HAS_OPEN_ORDER;
+        }
+        orderBooks.remove(symbolId);
+        return CommandResultCode.SUCCESS;
     }
 
     private void processMatchingCommand(final OrderCommand cmd) {

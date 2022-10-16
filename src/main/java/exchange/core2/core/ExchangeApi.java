@@ -103,6 +103,8 @@ public final class ExchangeApi {
             ringBuffer.publishEvent(RESET_TRANSLATOR, (ApiReset) cmd);
         } else if (cmd instanceof ApiAdjustSymbolFee) {
             ringBuffer.publishEvent(ADJUST_SYMBOL_FEE_TRANSLATOR, (ApiAdjustSymbolFee) cmd);
+        } else if (cmd instanceof ApiRemoveSymbol) {
+            ringBuffer.publishEvent(REMOVE_SYMBOL_TRANSLATOR, (ApiRemoveSymbol) cmd);
         } else if (cmd instanceof ApiNop) {
             ringBuffer.publishEvent(NOP_TRANSLATOR, (ApiNop) cmd);
         } else {
@@ -139,6 +141,8 @@ public final class ExchangeApi {
             return submitCommandAsync(RESET_TRANSLATOR, (ApiReset) cmd);
         } else if (cmd instanceof ApiAdjustSymbolFee) {
             return submitCommandAsync(ADJUST_SYMBOL_FEE_TRANSLATOR, (ApiAdjustSymbolFee) cmd);
+        } else if (cmd instanceof ApiRemoveSymbol) {
+            return submitCommandAsync(REMOVE_SYMBOL_TRANSLATOR, (ApiRemoveSymbol) cmd);
         } else if (cmd instanceof ApiNop) {
             return submitCommandAsync(NOP_TRANSLATOR, (ApiNop) cmd);
         } else {
@@ -170,6 +174,8 @@ public final class ExchangeApi {
             return submitCommandAsyncFullResponse(RESET_TRANSLATOR, (ApiReset) cmd);
         } else if (cmd instanceof ApiAdjustSymbolFee) {
             return submitCommandAsyncFullResponse(ADJUST_SYMBOL_FEE_TRANSLATOR, (ApiAdjustSymbolFee) cmd);
+        } else if (cmd instanceof ApiRemoveSymbol) {
+            return submitCommandAsyncFullResponse(REMOVE_SYMBOL_TRANSLATOR, (ApiRemoveSymbol) cmd);
         } else if (cmd instanceof ApiNop) {
             return submitCommandAsyncFullResponse(NOP_TRANSLATOR, (ApiNop) cmd);
         } else {
@@ -526,6 +532,14 @@ public final class ExchangeApi {
                 cmd.symbol = api.symbolId;
                 cmd.price = api.takerFee;
                 cmd.size = api.makerFee;
+                cmd.timestamp = api.timestamp;
+                cmd.resultCode = CommandResultCode.NEW;
+            };
+
+    private static final EventTranslatorOneArg<OrderCommand, ApiRemoveSymbol> REMOVE_SYMBOL_TRANSLATOR =
+            (cmd, seq, api) -> {
+                cmd.command = OrderCommandType.REMOVE_SYMBOL;
+                cmd.symbol = api.symbolId;
                 cmd.timestamp = api.timestamp;
                 cmd.resultCode = CommandResultCode.NEW;
             };
