@@ -36,6 +36,7 @@ public interface ReportQuery<T extends ReportResult> extends WriteBytesMarshalla
     int getReportTypeCode();
 
     /**
+     * @param sections output sections
      * @return report map-reduce constructor
      */
     T createResult(Stream<BytesIn> sections);
