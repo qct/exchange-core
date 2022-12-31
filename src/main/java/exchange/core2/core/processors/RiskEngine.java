@@ -270,17 +270,13 @@ public final class RiskEngine implements WriteBytesMarshallable {
                 }
                 return false;
             case ADJUST_SYMBOL_FEE:
-                if (shardId == 0) {
-                    cmd.resultCode = adjustSymbolFee(cmd.symbol, cmd.price, cmd.size);
-                }
+                cmd.resultCode = adjustSymbolFee(cmd.symbol, cmd.price, cmd.size);
                 return false;
             case REMOVE_SYMBOL:
-                if (shardId == 0) {
-                    CoreSymbolSpecification spec = symbolSpecificationProvider.getSymbolSpecification(cmd.symbol);
-                    cmd.resultCode = spec == null
-                            ? CommandResultCode.SYMBOL_MGMT_SYMBOL_NOT_EXISTS
-                            : CommandResultCode.VALID_FOR_MATCHING_ENGINE;
-                }
+                CoreSymbolSpecification spec = symbolSpecificationProvider.getSymbolSpecification(cmd.symbol);
+                cmd.resultCode = spec == null
+                        ? CommandResultCode.SYMBOL_MGMT_SYMBOL_NOT_EXISTS
+                        : CommandResultCode.VALID_FOR_MATCHING_ENGINE;
                 return false;
 
             case BINARY_DATA_COMMAND:
