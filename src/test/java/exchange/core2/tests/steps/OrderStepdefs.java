@@ -177,7 +177,13 @@ public class OrderStepdefs implements En {
                                 SerializationUtils.mergeSum(a.getOpenInterestLong(), b.getOpenInterestLong()),
                                 SerializationUtils.mergeSum(a.getOpenInterestShort(), b.getOpenInterestShort()))));
 
-        Before((HookNoArgsBody) -> container = ExchangeTestContainer.create(testPerformanceConfiguration));
+        Before((HookNoArgsBody) -> {
+            if (testPerformanceConfiguration == null) {
+                testPerformanceConfiguration =
+                        PerformanceConfiguration.baseBuilder().build();
+            }
+            container = ExchangeTestContainer.create(testPerformanceConfiguration);
+        });
         After((HookNoArgsBody) -> {
             if (container != null) {
                 container.close();
@@ -369,8 +375,8 @@ public class OrderStepdefs implements En {
             List<CoreSymbolSpecification> symbolSpecs = dataTable.asList(CoreSymbolSpecification.class);
             TotalSymbolReportResult result = container.totalSymbolReport();
             assertThat(
-                    symbolSpecs,
-                    containsInAnyOrder(result.getSymbolSpecs().values().toArray(new CoreSymbolSpecification[0])));
+                result.getSymbolSpecs().values(),
+                    containsInAnyOrder(symbolSpecs.toArray(new CoreSymbolSpecification[0])));
         });
         Given("^Add symbol\\(s\\) to an exchange:$", (DataTable dataTable) -> {
             List<CoreSymbolSpecification> symbolSpecs = dataTable.asList(CoreSymbolSpecification.class);
